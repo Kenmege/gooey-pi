@@ -52,6 +52,14 @@ describe('AgentScheduleBridge', () => {
     expect(await call('list', {}, other.PRIME_WORK_SCHEDULE_TOKEN)).toMatchObject({ status: 200 })
   })
 
+  it('bans Python bytecode for every runtime that receives the bundled scheduling skill', async () => {
+    const { environment } = await fixture()
+    expect(environment.PRIME_WORK_SCHEDULE_SKILL_PATH).toBe('/app/skills/prime-work-schedules')
+    // The skill is imported from inside the packaged app, so importing it must not write
+    // bytecode into the code-signed bundle.
+    expect(environment.PYTHONDONTWRITEBYTECODE).toBe('1')
+  })
+
   it('creates agent-attributed tasks only in the capability current target', async () => {
     const { service, environment, call } = await fixture()
     expect(environment.PRIME_WORK_SCHEDULE_SKILL_PATH).toBe('/app/skills/prime-work-schedules')

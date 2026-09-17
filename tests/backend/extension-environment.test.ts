@@ -33,6 +33,7 @@ const scheduleBridgeEnvironment = {
   PRIME_WORK_SCHEDULE_URL: 'http://127.0.0.1:45001',
   PRIME_WORK_SCHEDULE_TOKEN: 'schedule-token',
   PRIME_WORK_SCHEDULE_SKILL_PATH: '/app/skills/prime-work-schedules',
+  PYTHONDONTWRITEBYTECODE: '1',
 }
 const browserBridgeEnvironment = {
   PRIME_WORK_BROWSER_URL: 'http://127.0.0.1:45002',
@@ -52,6 +53,9 @@ describe('capability extension environment parity (OMP and pi)', () => {
     // The Prime-only --skill inputs never reach an extension-based harness.
     expect(environment.PRIME_WORK_SCHEDULE_SKILL_PATH).toBeUndefined()
     expect(environment.PRIME_WORK_BROWSER_SKILL_PATH).toBeUndefined()
+    // The bytecode ban is not Prime-only: it travels with the skill path, so extension-based
+    // harnesses keep it and no GooeyPi-spawned interpreter can write into the signed bundle.
+    expect(environment.PYTHONDONTWRITEBYTECODE).toBe('1')
     // The loopback-broker contract from both bridges is preserved untouched.
     expect(environment.PRIME_WORK_SCHEDULE_URL).toBe('http://127.0.0.1:45001')
     expect(environment.PRIME_WORK_SCHEDULE_TOKEN).toBe('schedule-token')

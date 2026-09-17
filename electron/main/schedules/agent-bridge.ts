@@ -25,11 +25,19 @@ export class AgentScheduleBridge extends CapabilityBridge {
 
   constructor(private readonly options: AgentScheduleBridgeOptions) { super() }
 
+  /**
+   * The bundled `prime-work-schedules` skill is a Python package that ships inside the packaged
+   * app (`Resources/skills/...`). An interpreter that imports it writes `__pycache__` next to the
+   * source by default, which adds an unsealed file to the code-signed bundle and makes the
+   * installed app fail Gatekeeper. Every runtime that receives this skill path is spawned by
+   * GooeyPi, so the bytecode ban is handed out alongside the path that causes the write.
+   */
   protected environmentEntries(url: string, token: string): NodeJS.ProcessEnv {
     return {
       PRIME_WORK_SCHEDULE_URL: url,
       PRIME_WORK_SCHEDULE_TOKEN: token,
       PRIME_WORK_SCHEDULE_SKILL_PATH: this.options.skillPath,
+      PYTHONDONTWRITEBYTECODE: '1',
     }
   }
 
